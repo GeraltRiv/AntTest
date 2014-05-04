@@ -1,0 +1,246 @@
+<!--
+
+Ant simple sample project.
+
+Kick start your java builds.
+004.
+Find out more at http://www.bodkinconsulting.com
+005.
+or http://java.net/projects/ant-simple-sample
+006.
+ 
+007.
+Instructions:
+008.
+Put this file in an empty directory and run the 'ant' command in that directory. The build file will create directories and make a very empty jar file in the same directory as the build.xml.
+009.
+ 
+010.
+Create src/HW.java and put this code in it.
+011.
+ 
+012.
+public class HW
+013.
+{
+014.
+public static void main(String [] args)
+015.
+{
+016.
+System.out.println("Hello World");
+017.
+}
+018.
+ 
+019.
+}
+020.
+ 
+021.
+in the build file below change 
+022.
+<property name="main_class_name" value="changeme"/>
+023.
+to
+024.
+<property name="main_class_name" value="HW"/>
+025.
+ 
+026.
+Run the ant command again, and now you can run your main class with the command
+027.
+java -jar antsimple.jar
+028.
+ 
+029.
+It should print:
+030.
+Hellow World
+031.
+and exit.
+032.
+ 
+033.
+Add a junit.jar (from junit.org) into your ANT_HOME/lib directory and run 'ant test'
+034.
+ 
+035.
+Create the file test/HWTest.java and add this code.
+036.
+import junit.framework.*;
+037.
+public class HWTest extends TestCase {
+038.
+public void testTrue()
+039.
+{
+040.
+assertTrue(true);
+041.
+}
+042.
+}
+043.
+ 
+044.
+-->
+
+<project name="antsimple" default="dist" basedir=".">
+
+<description>
+
+Ant Simple Sample File
+
+</description>
+
+<!-- set global properties for this build -->
+
+<property name="ant.project.name" value="antsimple"/>
+
+<property name="main_class_name" value="changeme"/>
+
+<property name="jarname"  value="${ant.project.name}"/>
+
+<!-- set directories -->
+
+<property name="src" location="src"/>
+
+<property name="test" location="test"/>
+
+<property name="build" location="build"/>
+
+<property name="dist"  location="dist"/>
+
+<property name="lib"  location="lib"/>
+
+<path id="project.classpath">
+
+<pathelement location="${build}" />
+
+<pathelement location="${lib}" />
+
+</path>
+
+ 
+
+<target name="init">
+
+<!-- Create the time stamp -->
+
+<tstamp/>
+
+<!-- Create directories if needed -->
+
+<mkdir dir="${src}"/>
+
+<mkdir dir="${test}"/>
+
+<mkdir dir="${build}"/>
+
+<mkdir dir="${dist}"/>
+
+</target>
+
+<target name="compile" depends="init" description="compile the source " >
+
+<!-- Compile the java code from ${src} into ${build} -->
+
+<javac debug="true"
+
+srcdir="${src}"
+
+destdir="${build}"
+
+classpathref="project.classpath"/>
+
+<!-- Copy files from ${src} into ${build} -->
+
+<copy todir="${build}">
+
+<fileset dir="${src}">
+
+<exclude name="**/*.java"/>
+
+</fileset>
+
+</copy>
+
+</target>
+<!--
+092.
+Broken???
+093.
+-->
+
+<target name="test" depends="compiletest" description="run the tests " >
+
+<junit printsummary="yes" fork="yes" haltonfailure="yes">
+
+<formatter type="plain"/>
+
+<batchtest fork="true">
+
+<fileset dir="${test}">
+
+<include name="**/*Test*.java"/>
+
+</fileset>
+
+</batchtest>
+
+<classpath refid="${project.classpath}" />
+
+</junit>
+
+</target>
+
+<target name="compiletest" depends="compile"
+
+description="compile the tests " >
+
+<javac debug="true"
+
+srcdir="${test}"
+
+destdir="${build}"
+
+classpathref="project.classpath" />
+
+</target>
+
+<target name="dist" depends="compile" description="generate the distribution" >
+
+<!-- Create the distribution directory -->
+
+<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+
+<jar jarfile="${dist}/${jarname}-${DSTAMP}.jar" basedir="${build}">
+
+<manifest>
+
+<attribute name="Main-Class"
+
+value="${main_class_name}"/>
+
+</manifest>
+
+</jar>
+
+<copy file="${dist}/${jarname}-${DSTAMP}.jar" tofile="./${jarname}.jar" overwrite="true"/>
+
+</target>
+
+ 
+
+<target name="clean"
+
+description="clean up" >
+
+<!-- Delete the ${build} directory-->
+
+<delete dir="${build}"/>
+
+</target>
+
+</project>
